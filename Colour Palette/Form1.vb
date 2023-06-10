@@ -1,11 +1,5 @@
 ﻿Imports System.Collections.ObjectModel
-Imports System.Data.SqlTypes
-Imports System.Drawing.Imaging
 Imports System.Numerics
-Imports System.Numerics.Vector2
-Imports System.Threading
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar
-Imports System.Xml
 Imports System.IO
 Public Class Form1
     Public Structure paletteData
@@ -34,32 +28,38 @@ Public Class Form1
         BackgroundImage = New Bitmap(500, 500)
         Dim loadFromFile As MsgBoxResult = MsgBox("Load from file?", MsgBoxStyle.YesNo, "Colour Palette")
         If loadFromFile = MsgBoxResult.Yes Then
+            If Not Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\") Then
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\")
+            End If
             Dim loadfile As String = ""
-            With OpenFileDialog1
-                .AddExtension = True
-                .CheckFileExists = True
-                .DefaultExt = ".pal"
-                .InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\"
-                .Multiselect = False
-                .FileName = "save.pal"
-                .ShowDialog()
-                loadfile = .FileName
-            End With
-            Text = Path.GetFileNameWithoutExtension(loadfile)
-            Dim fileContents() As String = File.ReadAllLines(loadfile)
-            For Each line In fileContents
-                Dim newSpot As paletteData
-                newSpot.fromString(line)
-                paletteColour.Add(newSpot)
-            Next
-        End If
+                With OpenFileDialog1
+                    .AddExtension = True
+                    .CheckFileExists = True
+                    .DefaultExt = ".pal"
+                    .InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\"
+                    .Multiselect = False
+                    .FileName = "save.pal"
+                    .ShowDialog()
+                    loadfile = .FileName
+                End With
+                Text = Path.GetFileNameWithoutExtension(loadfile)
+                Dim fileContents() As String = File.ReadAllLines(loadfile)
+                For Each line In fileContents
+                    Dim newSpot As paletteData
+                    newSpot.fromString(line)
+                    paletteColour.Add(newSpot)
+                Next
+            End If
 
-        Timer1.Interval = 1   'This just calls the draw function 1 millisecond after loading, as it for some reason cant draw during the loading stage
+            Timer1.Interval = 1   'This just calls the draw function 1 millisecond after loading, as it for some reason cant draw during the loading stage
         Timer1.Start()
     End Sub
     Private Sub Form1_Closing(sender As Object, e As FormClosingEventArgs) Handles MyBase.Closing
         Dim loadFromFile As MsgBoxResult = MsgBox("Save to file?", MsgBoxStyle.YesNoCancel, "Colour Palette")
         If loadFromFile = MsgBoxResult.Yes Then
+            If Not Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\") Then
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\")
+            End If
             Dim saveDirectory As String = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\ColourPalettes\"
             Dim savefile As String = ""
             Dim firstItem As Boolean = True
